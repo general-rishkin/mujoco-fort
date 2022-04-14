@@ -1,0 +1,24 @@
+name = "mujoco-fort"
+version = "0.1.0"
+license = "license"
+author = "Gennadiy Rishkin"
+maintainer = "gennadiy.rishkin@gmail.com"
+copyright = "Copyright 2022, Gennadiy Rishkin"
+
+[build]
+link=["mujoco", "GL", "glew", "glfw", "m"]
+
+
+auto-executables = false #true
+
+auto-tests = true
+auto-examples = true
+
+[install]
+library = false
+
+[[ executable ]]
+name="test_mujoco"
+source-dir="app"
+main="main_mujoco_test.f90"
+
