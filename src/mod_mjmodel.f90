@@ -334,7 +334,7 @@ module mod_mjmodel
     integer(c_int)      :: nfile                  !! number of files present
     character(len=1, kind=c_char), dimension(mjMAXVFS, mjMAXVFSNAME) :: filename !! file name without path
     integer(c_int)      :: filesize(mjMAXVFS)     !! file size in bytes
-    type(c_ptr)         :: filedata               !(mjMAXVFS)     !! buffer with file data
+    type(c_ptr)         :: filedata(mjMAXVFS)               !(mjMAXVFS)     !! buffer with file data
   end type mjVFS
 
 
