@@ -337,29 +337,29 @@ module mod_glfw
   abstract interface
     ! typedef void (* GLFWkeyfun)(GLFWwindow* window, int key, int scancode, int action, int mods);
     subroutine GLFWkeyfun(window, key, scancode, action, mods) bind(c)!, name="GLFWkeyfun")
-      import :: GLFWwindow, c_int
-      type(GLFWwindow), intent(inout)   :: window
+      import :: c_ptr, c_int
+      type(c_ptr), value   :: window
       integer(c_int), value, intent(in) :: key, scancode, action, mods
     end subroutine GLFWkeyfun
 
     ! typedef void (* GLFWcursorposfun)(GLFWwindow* window, double xpos, double ypos);
     subroutine GLFWcursorposfun(window, xpos, ypos) bind(c)!, name="GLFWcursorposfun")
-      import :: GLFWwindow, c_double
-      type(GLFWwindow), intent(inout)   :: window
+      import :: c_ptr, c_double
+      type(c_ptr), value   :: window
       real(c_double), value, intent(in) :: xpos, ypos
     end subroutine GLFWcursorposfun
 
     ! typedef void (* GLFWmousebuttonfun)(GLFWwindow* window, int button, int action, int mods);
     subroutine GLFWmousebuttonfun(window, button, action, mods) bind(c)!, name="GLFWmousebuttonfun")
-      import :: GLFWwindow, c_int
-      type(GLFWwindow), intent(inout)   :: window
+      import :: c_ptr, c_int
+      type(c_ptr), value   :: window
       integer(c_int), value, intent(in) :: button, action, mods
     end subroutine GLFWmousebuttonfun
 
     ! typedef void (* GLFWscrollfun)(GLFWwindow* window, double xoffset, double yoffset);
     subroutine GLFWscrollfun(window, xoffset, yoffset) bind(c)!, name="GLFWscrollfun")
-      import :: GLFWwindow, c_double
-      type(GLFWwindow), intent(inout)   :: window
+      import :: c_ptr, c_double
+      type(c_ptr), value   :: window
       real(c_double), value, intent(in) :: xoffset, yoffset
     end subroutine GLFWscrollfun
   end interface
@@ -393,59 +393,63 @@ module mod_glfw
 
     ! GLFWAPI GLFWkeyfun glfwSetKeyCallback(GLFWwindow* window, GLFWkeyfun callback);
     type(c_funptr) function glfwSetKeyCallback(window, callback) bind(c, name="glfwSetKeyCallback")
-      import :: c_funptr, GLFWwindow
-      type(GLFWwindow), intent(inout)             :: window
-      type(c_funptr), intent(in)                  :: callback
+      import :: c_funptr, c_ptr
+      type(c_ptr), value                          :: window
+      ! type(c_funptr), value                       :: callback
+      procedure(GLFWkeyfun)                       :: callback
     end function glfwSetKeyCallback
 
     ! GLFWAPI GLFWcursorposfun glfwSetCursorPosCallback(GLFWwindow* window, GLFWcursorposfun callback);
     type(c_funptr) function glfwSetCursorPosCallback(window, callback) bind(c, name="glfwSetCursorPosCallback")
-      import :: c_funptr, GLFWwindow
-      type(GLFWwindow), intent(inout)             :: window
-      type(c_funptr), intent(in)                  :: callback
+      import :: c_funptr, c_ptr
+      type(c_ptr), value                          :: window
+      ! type(c_funptr), value                       :: callback
+      procedure(GLFWcursorposfun)                 :: callback
     end function glfwSetCursorPosCallback
 
     ! GLFWAPI void glfwGetWindowSize(GLFWwindow* window, int* width, int* height);
     subroutine glfwGetWindowSize(window, width, height) bind(c, name="glfwGetWindowSize")
-      import :: GLFWwindow, c_int
-      type(GLFWwindow), intent(inout)     :: window
+      import :: c_ptr, c_int
+      type(c_ptr), value                  :: window
       integer(c_int), intent(out)         :: width, height
     end subroutine glfwGetWindowSize
 
     ! GLFWAPI int glfwGetKey(GLFWwindow* window, int key);
     integer(c_int) function glfwGetKey(window, key) bind(c, name="glfwGetKey")
-      import :: c_int, GLFWwindow
-      type(GLFWwindow), intent(inout)     :: window
+      import :: c_int, c_ptr
+      type(c_ptr), value                  :: window
       integer(c_int), value, intent(in)   :: key
     end function glfwGetKey
 
     ! GLFWAPI GLFWmousebuttonfun glfwSetMouseButtonCallback(GLFWwindow* window, GLFWmousebuttonfun callback);
     type(c_funptr) function glfwSetMouseButtonCallback(window, callback) bind(c, name="glfwSetMouseButtonCallback")
-      import :: c_funptr, GLFWwindow
-      type(GLFWwindow), intent(inout)     :: window
-      type(c_funptr), intent(in)          :: callback
+      import :: c_funptr, c_ptr
+      type(c_ptr), value                  :: window
+      ! type(c_funptr), value               :: callback
+      procedure(GLFWmousebuttonfun)       :: callback
     end function glfwSetMouseButtonCallback
 
 
     ! GLFWAPI int glfwGetMouseButton(GLFWwindow* window, int button);
     integer(c_int) function glfwGetMouseButton(window, button) bind(c, name="glfwGetMouseButton")
-      import :: c_int, GLFWwindow
-      type(GLFWwindow), intent(inout)   :: window
+      import :: c_ptr, c_int
+      type(c_ptr), value                :: window
       integer(c_int), value, intent(in) :: button
     end function glfwGetMouseButton
 
     ! GLFWAPI void glfwGetCursorPos(GLFWwindow* window, double* xpos, double* ypos);
     subroutine glfwGetCursorPos(window, xpos, ypos) bind(c, name="glfwGetCursorPos")
-      import :: c_double, GLFWwindow
-      type(GLFWwindow), intent(inout)   :: window
+      import :: c_double, c_ptr
+      type(c_ptr), value                :: window
       real(c_double), intent(out)       :: xpos, ypos
     end subroutine glfwGetCursorPos
 
     ! GLFWAPI GLFWscrollfun glfwSetScrollCallback(GLFWwindow* window, GLFWscrollfun callback);
     type(c_funptr) function glfwSetScrollCallback(window, callback) bind(c, name="glfwSetScrollCallback")
-      import :: c_funptr, GLFWwindow
-      type(GLFWwindow), intent(inout)   :: window
-      type(c_funptr), intent(in)        :: callback
+      import :: c_funptr, c_ptr
+      type(c_ptr), value                :: window
+      ! type(c_funptr), value             :: callback
+      procedure(GLFWscrollfun)          :: callback
     end function glfwSetScrollCallback
 
     ! GLFWAPI int glfwWindowShouldClose(GLFWwindow* window);

@@ -301,8 +301,8 @@ module mod_mujoco
     !! Free memory allocation in model.
     ! MJAPI void mj_deleteModel(mjModel* m)
     subroutine mj_deleteModel(m) bind(c, name="mj_deleteModel")
-      import :: mjModel
-      type(mjModel), intent(inout)  :: m
+      import :: c_ptr
+      type(c_ptr), value                :: m
     end subroutine mj_deleteModel
 
     !! Return size of buffer needed to hold model.
@@ -334,9 +334,9 @@ module mod_mujoco
     !! Reset data to defaults.
     ! MJAPI void mj_resetData(const mjModel* m, mjData* d)
     subroutine mj_resetData(m, d) bind(c, name="mj_resetData")
-      import :: mjModel, mjData
-      type(mjModel), intent(in)        :: m
-      type(mjData), intent(inout)      :: d
+      import :: c_ptr
+      type(c_ptr), intent(in), value   :: m
+      type(c_ptr), value               :: d
     end subroutine mj_resetData
 
     !! Reset data to defaults, fill everything else with debug_value.
@@ -368,8 +368,8 @@ module mod_mujoco
     !! Free memory allocation in mjData.
     ! MJAPI void mj_deleteData(mjData* d)
     subroutine mj_deleteData(d) bind(c, name="mj_deleteData")
-      import :: mjData
-      type(mjData), intent(inout)       :: d
+      import :: c_ptr
+      type(c_ptr), value                :: d
     end subroutine mj_deleteData
 
     !! Reset all callbacks to NULL pointers (NULL is the default).
@@ -1179,12 +1179,12 @@ module mod_mujoco
     ! MJAPI void mjv_moveCamera(const mjModel* m, int action, mjtNum reldx, mjtNum reldy,
     !                           const mjvScene* scn, mjvCamera* cam)
     subroutine mjv_moveCamera(m, action, reldx, reldy, scn, cam) bind(c, name="mjv_moveCamera")
-      import :: mjModel, mjtNum, mjvScene, mjvCamera, c_int
-      type(mjModel), intent(in)         :: m
+      import :: c_ptr, mjtNum, mjvScene, mjvCamera, c_int
+      type(c_ptr), intent(in), value    :: m
       integer(c_int), value, intent(in) :: action
       real(mjtNum), value, intent(in)   :: reldx, reldy
-      type(mjvScene), intent(in)        :: scn
-      type(mjvCamera), intent(inout)    :: cam
+      type(c_ptr), intent(in), value    :: scn
+      type(c_ptr), value                :: cam
     end subroutine mjv_moveCamera
 
     ! !! Move perturb object with mouse action is mjtMouse.
@@ -1325,8 +1325,8 @@ module mod_mujoco
     !! Free abstract scene.
     ! MJAPI void mjv_freeScene(mjvScene* scn)
     subroutine mjv_freeScene(scn) bind(c, name="mjv_freeScene")
-      import :: mjvScene
-      type(mjvScene), intent(inout)       :: scn
+      import :: c_ptr
+      type(c_ptr), value                 :: scn
     end subroutine mjv_freeScene
 
     !! Update entire scene given model state.
@@ -1422,8 +1422,8 @@ module mod_mujoco
     !! Free resources in custom OpenGL context, set to default.
     ! MJAPI void mjr_freeContext(mjrContext* con)
     subroutine mjr_freeContext(con) bind(c, name="mjr_freeContext")
-      import :: mjrContext
-      type(mjrContext), intent(inout)     :: con
+      import :: c_ptr
+      type(c_ptr), value                  :: con
     end subroutine mjr_freeContext
 
     !! Upload texture to GPU, overwriting previous upload if any.
