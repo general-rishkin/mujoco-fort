@@ -260,9 +260,11 @@ module mod_mjvisualize
     !! OpenGL lights
     integer(c_int)                  :: nlight                !! number of lights currently in buffer
     type(mjvLight)                  :: lights(mjMAXLIGHT)    !! buffer for lights
+    ! type(c_ptr)                     :: lights                !! buffer for lights
 
     !! OpenGL cameras
-    type(mjvGLCamera)               :: camera(2)          !! left and right camera
+    type(mjvGLCamera)               :: camera(2)             !! left and right camera
+    ! type(c_ptr)                     :: camera                !! left and right camera
 
     !! OpenGL model transformation
     integer(mjtByte)                :: enabletransform       !! enable model transformation

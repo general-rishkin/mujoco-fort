@@ -15,7 +15,7 @@
 #ifndef MUJOCO_MJMODEL_H_
 #define MUJOCO_MJMODEL_H_
 
-#include <mjtnum.h>
+#include <mujoco/mjtnum.h>
 
 // global constants
 #define mjPI            3.14159265358979323846
@@ -68,8 +68,10 @@ typedef enum mjtEnableBit_ {      // enable optional feature bitflags
   mjENBL_ENERGY       = 1<<1,     // energy computation
   mjENBL_FWDINV       = 1<<2,     // record solver statistics
   mjENBL_SENSORNOISE  = 1<<3,     // add noise to sensor data
+                                  // experimental features:
+  mjENBL_MULTICCD     = 1<<4,     // multi-point convex collision detection
 
-  mjNENABLE           = 4         // number of enable flags
+  mjNENABLE           = 5         // number of enable flags
 } mjtEnableBit;
 
 
@@ -124,7 +126,8 @@ typedef enum mjtTexture_ {        // type of texture
 
 typedef enum mjtIntegrator_ {     // integrator mode
   mjINT_EULER         = 0,        // semi-implicit Euler
-  mjINT_RK4                       // 4th-order Runge Kutta
+  mjINT_RK4,                      // 4th-order Runge Kutta
+  mjINT_IMPLICIT                  // implicit in velocity
 } mjtIntegrator;
 
 
@@ -566,6 +569,7 @@ struct mjModel_ {
 
   // sizes set after mjModel construction (only affect mjData)
   int nM;                         // number of non-zeros in sparse inertia matrix
+  int nD;                         // number of non-zeros in sparse derivative matrix
   int nemax;                      // number of potential equality-constraint rows
   int njmax;                      // number of available rows in constraint Jacobian
   int nconmax;                    // number of potential contacts in contact list
@@ -830,11 +834,13 @@ struct mjModel_ {
   int*      actuator_group;       // group for visibility                     (nu x 1)
   mjtByte*  actuator_ctrllimited; // is control limited                       (nu x 1)
   mjtByte*  actuator_forcelimited;// is force limited                         (nu x 1)
+  mjtByte*  actuator_actlimited;  // is activation limited                    (nu x 1)
   mjtNum*   actuator_dynprm;      // dynamics parameters                      (nu x mjNDYN)
   mjtNum*   actuator_gainprm;     // gain parameters                          (nu x mjNGAIN)
   mjtNum*   actuator_biasprm;     // bias parameters                          (nu x mjNBIAS)
   mjtNum*   actuator_ctrlrange;   // range of controls                        (nu x 2)
   mjtNum*   actuator_forcerange;  // range of forces                          (nu x 2)
+  mjtNum*   actuator_actrange;    // range of activations                     (nu x 2)
   mjtNum*   actuator_gear;        // scale length and transmitted force       (nu x 6)
   mjtNum*   actuator_cranklength; // crank length for slider-crank            (nu x 1)
   mjtNum*   actuator_acc0;        // acceleration from unit force in qpos0    (nu x 1)

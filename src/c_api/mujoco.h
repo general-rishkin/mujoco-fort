@@ -15,7 +15,7 @@
 #ifndef MUJOCO_MUJOCO_H_
 #define MUJOCO_MUJOCO_H_
 
-#include <mjexport.h>
+#include <mujoco/mjexport.h>
 
 
 // this is a C-API
@@ -24,7 +24,7 @@ extern "C" {
 #endif
 
 // header version; should match the library version as returned by mj_version()
-#define mjVERSION_HEADER 213
+#define mjVERSION_HEADER 220
 
 // needed to define size_t, fabs and log10
 #include "stdlib.h"
@@ -32,12 +32,12 @@ extern "C" {
 
 
 // type definitions
-#include <mjdata.h>
-#include <mjmodel.h>
-#include <mjrender.h>
-#include <mjtnum.h>
-#include <mjui.h>
-#include <mjvisualize.h>
+#include <mujoco/mjdata.h>
+#include <mujoco/mjmodel.h>
+#include <mujoco/mjrender.h>
+#include <mujoco/mjtnum.h>
+#include <mujoco/mjui.h>
+#include <mujoco/mjvisualize.h>
 
 
 // macros
@@ -79,21 +79,12 @@ MJAPI extern const char* mjVISSTRING[mjNVISFLAG][3];
 MJAPI extern const char* mjRNDSTRING[mjNRNDFLAG][3];
 
 
-//---------------------------------- Activation ----------------------------------------------------
-
-// Return 1 (for backward compatibility).
-MJAPI int mj_activate(const char* filename);
-
-// Do nothing (for backward compatibility).
-MJAPI void mj_deactivate(void);
-
-
 //---------------------------------- Virtual file system -------------------------------------------
 
 // Initialize VFS to empty (no deallocation).
 MJAPI void mj_defaultVFS(mjVFS* vfs);
 
-// Add file to VFS, return 0: success, 1: full, 2: repeated name, -1: not found on disk.
+// Add file to VFS, return 0: success, 1: full, 2: repeated name, -1: failed to load.
 MJAPI int mj_addFileVFS(mjVFS* vfs, const char* directory, const char* filename);
 
 // Make empty file in VFS, return 0: success, 1: full, 2: repeated name.
@@ -148,12 +139,10 @@ MJAPI void mj_forward(const mjModel* m, mjData* d);
 MJAPI void mj_inverse(const mjModel* m, mjData* d);
 
 // Forward dynamics with skip; skipstage is mjtStage.
-MJAPI void mj_forwardSkip(const mjModel* m, mjData* d,
-                          int skipstage, int skipsensor);
+MJAPI void mj_forwardSkip(const mjModel* m, mjData* d, int skipstage, int skipsensor);
 
 // Inverse dynamics with skip; skipstage is mjtStage.
-MJAPI void mj_inverseSkip(const mjModel* m, mjData* d,
-                          int skipstage, int skipsensor);
+MJAPI void mj_inverseSkip(const mjModel* m, mjData* d, int skipstage, int skipsensor);
 
 
 //---------------------------------- Initialization ------------------------------------------------
@@ -224,8 +213,7 @@ MJAPI int mj_setLengthRange(mjModel* m, mjData* d, int index,
 
 // Print mjModel to text file, specifying format.
 // float_format must be a valid printf-style format string for a single float value.
-MJAPI void mj_printFormattedModel(const mjModel* m, const char* filename,
-                                  const char* float_format);
+MJAPI void mj_printFormattedModel(const mjModel* m, const char* filename, const char* float_format);
 
 // Print model to text file.
 MJAPI void mj_printModel(const mjModel* m, const char* filename);
@@ -243,8 +231,7 @@ MJAPI void mju_printMat(const mjtNum* mat, int nr, int nc);
 
 // Print sparse matrix to screen.
 MJAPI void mju_printMatSparse(const mjtNum* mat, int nr,
-                              const int* rownnz, const int* rowadr,
-                              const int* colind);
+                              const int* rownnz, const int* rowadr, const int* colind);
 
 
 //---------------------------------- Components ----------------------------------------------------
@@ -255,7 +242,7 @@ MJAPI void mj_fwdPosition(const mjModel* m, mjData* d);
 // Run velocity-dependent computations.
 MJAPI void mj_fwdVelocity(const mjModel* m, mjData* d);
 
-// Compute actuator force qfrc_actuation.
+// Compute actuator force qfrc_actuator.
 MJAPI void mj_fwdActuation(const mjModel* m, mjData* d);
 
 // Add up all non-constraint forces, compute qacc_unc.
@@ -384,35 +371,29 @@ MJAPI int mj_isSparse(const mjModel* m);
 MJAPI int mj_isDual(const mjModel* m);
 
 // Multiply dense or sparse constraint Jacobian by vector.
-MJAPI void mj_mulJacVec(const mjModel* m, mjData* d,
-                        mjtNum* res, const mjtNum* vec);
+MJAPI void mj_mulJacVec(const mjModel* m, mjData* d, mjtNum* res, const mjtNum* vec);
 
 // Multiply dense or sparse constraint Jacobian transpose by vector.
 MJAPI void mj_mulJacTVec(const mjModel* m, mjData* d, mjtNum* res, const mjtNum* vec);
 
 // Compute 3/6-by-nv end-effector Jacobian of global point attached to given body.
-MJAPI void mj_jac(const mjModel* m, const mjData* d,
-                  mjtNum* jacp, mjtNum* jacr, const mjtNum point[3], int body);
+MJAPI void mj_jac(const mjModel* m, const mjData* d, mjtNum* jacp, mjtNum* jacr,
+                  const mjtNum point[3], int body);
 
 // Compute body frame end-effector Jacobian.
-MJAPI void mj_jacBody(const mjModel* m, const mjData* d,
-                      mjtNum* jacp, mjtNum* jacr, int body);
+MJAPI void mj_jacBody(const mjModel* m, const mjData* d, mjtNum* jacp, mjtNum* jacr, int body);
 
 // Compute body center-of-mass end-effector Jacobian.
-MJAPI void mj_jacBodyCom(const mjModel* m, const mjData* d,
-                         mjtNum* jacp, mjtNum* jacr, int body);
+MJAPI void mj_jacBodyCom(const mjModel* m, const mjData* d, mjtNum* jacp, mjtNum* jacr, int body);
 
 // Compute geom end-effector Jacobian.
-MJAPI void mj_jacGeom(const mjModel* m, const mjData* d,
-                      mjtNum* jacp, mjtNum* jacr, int geom);
+MJAPI void mj_jacGeom(const mjModel* m, const mjData* d, mjtNum* jacp, mjtNum* jacr, int geom);
 
 // Compute site end-effector Jacobian.
-MJAPI void mj_jacSite(const mjModel* m, const mjData* d,
-                      mjtNum* jacp, mjtNum* jacr, int site);
+MJAPI void mj_jacSite(const mjModel* m, const mjData* d, mjtNum* jacp, mjtNum* jacr, int site);
 
 // Compute translation end-effector Jacobian of point, and rotation Jacobian of axis.
-MJAPI void mj_jacPointAxis(const mjModel* m, mjData* d,
-                           mjtNum* jacPoint, mjtNum* jacAxis,
+MJAPI void mj_jacPointAxis(const mjModel* m, mjData* d, mjtNum* jacPoint, mjtNum* jacAxis,
                            const mjtNum point[3], const mjtNum axis[3], int body);
 
 // Get id of object with specified name, return -1 if not found; type is mjtObj.
@@ -432,12 +413,10 @@ MJAPI void mj_mulM2(const mjModel* m, const mjData* d, mjtNum* res, const mjtNum
 
 // Add inertia matrix to destination matrix.
 // Destination can be sparse uncompressed, or dense when all int* are NULL
-MJAPI void mj_addM(const mjModel* m, mjData* d, mjtNum* dst,
-                   int* rownnz, int* rowadr, int* colind);
+MJAPI void mj_addM(const mjModel* m, mjData* d, mjtNum* dst, int* rownnz, int* rowadr, int* colind);
 
 // Apply cartesian force and torque (outside xfrc_applied mechanism).
-MJAPI void mj_applyFT(const mjModel* m, mjData* d,
-                      const mjtNum force[3], const mjtNum torque[3],
+MJAPI void mj_applyFT(const mjModel* m, mjData* d, const mjtNum force[3], const mjtNum torque[3],
                       const mjtNum point[3], int body, mjtNum* qfrc_target);
 
 // Compute object 6D velocity in object-centered frame, world/local orientation.
@@ -462,9 +441,8 @@ MJAPI void mj_integratePos(const mjModel* m, mjtNum* qpos, const mjtNum* qvel, m
 MJAPI void mj_normalizeQuat(const mjModel* m, mjtNum* qpos);
 
 // Map from body local to global Cartesian coordinates.
-MJAPI void mj_local2Global(mjData* d, mjtNum xpos[3], mjtNum xmat[9],
-                           const mjtNum pos[3], const mjtNum quat[4],
-                           int body, mjtByte sameframe);
+MJAPI void mj_local2Global(mjData* d, mjtNum xpos[3], mjtNum xmat[9], const mjtNum pos[3],
+                           const mjtNum quat[4], int body, mjtByte sameframe);
 
 // Sum all body masses.
 MJAPI mjtNum mj_getTotalmass(const mjModel* m);
@@ -666,8 +644,7 @@ MJAPI void mjr_blitBuffer(mjrRect src, mjrRect dst,
 MJAPI void mjr_setAux(int index, const mjrContext* con);
 
 // Blit from Aux buffer to con->currentBuffer.
-MJAPI void mjr_blitAux(int index, mjrRect src, int left, int bottom,
-                       const mjrContext* con);
+MJAPI void mjr_blitAux(int index, mjrRect src, int left, int bottom, const mjrContext* con);
 
 // Draw text at (x,y) in relative coordinates; font is mjtFont.
 MJAPI void mjr_text(int font, const char* txt, const mjrContext* con,
@@ -766,6 +743,15 @@ MJAPI void mj_warning(mjData* d, int warning, int info);
 
 // Write [datetime, type: message] to MUJOCO_LOG.TXT.
 MJAPI void mju_writeLog(const char* type, const char* msg);
+
+
+//---------------------------------- Activation ----------------------------------------------------
+
+// Return 1 (for backward compatibility).
+MJAPI int mj_activate(const char* filename);
+
+// Do nothing (for backward compatibility).
+MJAPI void mj_deactivate(void);
 
 
 //---------------------------------- Standard math -------------------------------------------------
@@ -914,12 +900,10 @@ MJAPI mjtNum mju_norm(const mjtNum* res, int n);
 MJAPI mjtNum mju_dot(const mjtNum* vec1, const mjtNum* vec2, const int n);
 
 // Multiply matrix and vector: res = mat * vec.
-MJAPI void mju_mulMatVec(mjtNum* res, const mjtNum* mat, const mjtNum* vec,
-                         int nr, int nc);
+MJAPI void mju_mulMatVec(mjtNum* res, const mjtNum* mat, const mjtNum* vec, int nr, int nc);
 
 // Multiply transposed matrix and vector: res = mat' * vec.
-MJAPI void mju_mulMatTVec(mjtNum* res, const mjtNum* mat, const mjtNum* vec,
-                          int nr, int nc);
+MJAPI void mju_mulMatTVec(mjtNum* res, const mjtNum* mat, const mjtNum* vec, int nr, int nc);
 
 // Transpose matrix: res = mat'.
 MJAPI void mju_transpose(mjtNum* res, const mjtNum* mat, int nr, int nc);
@@ -954,10 +938,10 @@ MJAPI void mju_rotVecQuat(mjtNum res[3], const mjtNum vec[3], const mjtNum quat[
 // Conjugate quaternion, corresponding to opposite rotation.
 MJAPI void mju_negQuat(mjtNum res[4], const mjtNum quat[4]);
 
-// Muiltiply quaternions.
+// Multiply quaternions.
 MJAPI void mju_mulQuat(mjtNum res[4], const mjtNum quat1[4], const mjtNum quat2[4]);
 
-// Muiltiply quaternion and axis.
+// Multiply quaternion and axis.
 MJAPI void mju_mulQuatAxis(mjtNum res[4], const mjtNum quat[4], const mjtNum axis[3]);
 
 // Convert axisAngle to quaternion.
@@ -1030,12 +1014,10 @@ MJAPI mjtNum mju_muscleBias(mjtNum len, const mjtNum lengthrange[2],
 MJAPI mjtNum mju_muscleDynamics(mjtNum ctrl, mjtNum act, const mjtNum prm[2]);
 
 // Convert contact force to pyramid representation.
-MJAPI void mju_encodePyramid(mjtNum* pyramid, const mjtNum* force,
-                             const mjtNum* mu, int dim);
+MJAPI void mju_encodePyramid(mjtNum* pyramid, const mjtNum* force, const mjtNum* mu, int dim);
 
 // Convert pyramid representation to contact force.
-MJAPI void mju_decodePyramid(mjtNum* force, const mjtNum* pyramid,
-                             const mjtNum* mu, int dim);
+MJAPI void mju_decodePyramid(mjtNum* force, const mjtNum* pyramid, const mjtNum* mu, int dim);
 
 // Integrate spring-damper analytically, return pos(dt).
 MJAPI mjtNum mju_springDamper(mjtNum pos0, mjtNum vel0, mjtNum Kp, mjtNum Kv, mjtNum dt);

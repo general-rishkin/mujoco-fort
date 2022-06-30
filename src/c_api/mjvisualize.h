@@ -15,8 +15,8 @@
 #ifndef MUJOCO_MJVISUALIZE_H_
 #define MUJOCO_MJVISUALIZE_H_
 
-#include <mjtnum.h>
-#include <mjmodel.h>
+#include <mujoco/mjtnum.h>
+#include <mujoco/mjmodel.h>
 
 #define mjNGROUP        6         // number of geom, site, joint groups with visflags
 #define mjMAXLIGHT      100       // maximum number of lights in a scene
@@ -88,6 +88,7 @@ typedef enum mjtFrame_ {          // frame visualization
   mjFRAME_SITE,                   // site frames
   mjFRAME_CAMERA,                 // camera frames
   mjFRAME_LIGHT,                  // light frames
+  mjFRAME_CONTACT,                // contact frames
   mjFRAME_WORLD,                  // world frame
 
   mjNFRAME                        // number of visualization frames

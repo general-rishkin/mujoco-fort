@@ -15,7 +15,7 @@
 #ifndef MUJOCO_MJRENDER_H_
 #define MUJOCO_MJRENDER_H_
 
-#include <mjmodel.h>
+#include <mujoco/mjmodel.h>
 
 #if defined(__cplusplus)
 extern "C" {
@@ -141,7 +141,7 @@ struct mjrContext_ {              // custom OpenGL context
   int charHeightBig;              // character heights: big
 
   // capabilities
-  int glewInitialized;            // is glew initialized
+  int glInitialized;              // is OpenGL initialized
   int windowAvailable;            // is default/window framebuffer available
   int windowSamples;              // number of samples for default/window framebuffer
   int windowStereo;               // is stereo available for default/window framebuffer

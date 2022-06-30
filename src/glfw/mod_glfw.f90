@@ -375,14 +375,14 @@ module mod_glfw
       import :: c_ptr, c_int, c_char, GLFWmonitor, GLFWwindow
       integer(c_int), value, intent(in)           :: width, height
       character(c_char), intent(in)               :: title(*)
-      type(GLFWmonitor), intent(in), optional     :: monitor
-      type(GLFWwindow), intent(in), optional      :: share
+      type(c_ptr), value                          :: monitor
+      type(c_ptr), value                          :: share
     end function glfwCreateWindow
 
     ! GLFWAPI void glfwMakeContextCurrent(GLFWwindow* window);
     subroutine glfwMakeContextCurrent(window) bind(c, name="glfwMakeContextCurrent")
-      import :: GLFWwindow
-      type(GLFWwindow), intent(inout)             :: window
+      import :: c_ptr
+      type(c_ptr), value             :: window
     end subroutine glfwMakeContextCurrent
 
     ! GLFWAPI void glfwSwapInterval(int interval);
@@ -450,21 +450,26 @@ module mod_glfw
 
     ! GLFWAPI int glfwWindowShouldClose(GLFWwindow* window);
     integer(c_int) function glfwWindowShouldClose(window) bind(c, name="glfwWindowShouldClose")
-      import :: c_int, GLFWwindow
-      type(GLFWwindow), intent(in)      :: window
+      import :: c_int, c_ptr
+      type(c_ptr), value                :: window
     end function glfwWindowShouldClose
 
     ! GLFWAPI void glfwGetFramebufferSize(GLFWwindow* window, int* width, int* height);
     subroutine glfwGetFramebufferSize(window, width, height) bind(c, name="glfwGetFramebufferSize")
-      import :: GLFWwindow, c_int
-      type(GLFWwindow), intent(in)      :: window
-      integer(c_int), intent(out)       :: width, height
+      import :: c_ptr, c_int
+      type(c_ptr), value                :: window
+      integer(c_int), intent(inout)     :: width, height
     end subroutine glfwGetFramebufferSize
+    ! subroutine glfwGetFramebufferSize(window, width, height) bind(c, name="glfwGetFramebufferSize")
+    !   import :: c_ptr, c_int
+    !   type(c_ptr), value           :: window
+    !   type(c_ptr), value     :: width, height
+    ! end subroutine glfwGetFramebufferSize
 
     ! GLFWAPI void glfwSwapBuffers(GLFWwindow* window);
     subroutine glfwSwapBuffers(window) bind(c, name="glfwSwapBuffers")
-      import :: GLFWwindow
-      type(GLFWwindow), intent(in)   :: window
+      import :: c_ptr
+      type(c_ptr), value   :: window
     end subroutine glfwSwapBuffers
 
     ! GLFWAPI void glfwPollEvents(void);

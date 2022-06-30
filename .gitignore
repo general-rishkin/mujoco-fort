@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+# Text Files
+MUJOCO_LOG.TXT
+
+# Build Directory
+build/

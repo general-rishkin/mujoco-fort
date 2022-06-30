@@ -31,27 +31,27 @@ module mod_mjmodel
   integer, parameter                    :: mjtByte = c_signed_char  !! used for true/false
 
   enum, bind(c) !! mjtDisableBit_                                   !! disable default feature bitflags
-    enumerator :: mjDSBL_CONSTRAINT   = lshift(1, 0)                !! entire constraint solver
-    enumerator :: mjDSBL_EQUALITY     = lshift(1, 1)                !! equality constraints
-    enumerator :: mjDSBL_FRICTIONLOSS = lshift(1, 2)                !! joint and tendon frictionloss constraints
-    enumerator :: mjDSBL_LIMIT        = lshift(1, 3)                !! joint and tendon limit constraints
-    enumerator :: mjDSBL_CONTACT      = lshift(1, 4)                !! contact constraints
-    enumerator :: mjDSBL_PASSIVE      = lshift(1, 5)                !! passive forces
-    enumerator :: mjDSBL_GRAVITY      = lshift(1, 6)                !! gravitational forces
-    enumerator :: mjDSBL_CLAMPCTRL    = lshift(1, 7)                !! clamp control to specified range
-    enumerator :: mjDSBL_WARMSTART    = lshift(1, 8)                !! warmstart constraint solver
-    enumerator :: mjDSBL_FILTERPARENT = lshift(1, 9)                !! remove collisions with parent body
-    enumerator :: mjDSBL_ACTUATION    = lshift(1, 10)               !! apply actuation forces
-    enumerator :: mjDSBL_REFSAFE      = lshift(1, 11)               !! integrator safety: make ref[0]>=2*timestep
+    enumerator :: mjDSBL_CONSTRAINT   = 1    !lshift(1, 0)                !! entire constraint solver
+    enumerator :: mjDSBL_EQUALITY     = 2    !lshift(1, 1)                !! equality constraints
+    enumerator :: mjDSBL_FRICTIONLOSS = 4    !lshift(1, 2)                !! joint and tendon frictionloss constraints
+    enumerator :: mjDSBL_LIMIT        = 8    !lshift(1, 3)                !! joint and tendon limit constraints
+    enumerator :: mjDSBL_CONTACT      = 16   !lshift(1, 4)                !! contact constraints
+    enumerator :: mjDSBL_PASSIVE      = 32   !lshift(1, 5)                !! passive forces
+    enumerator :: mjDSBL_GRAVITY      = 64   !lshift(1, 6)                !! gravitational forces
+    enumerator :: mjDSBL_CLAMPCTRL    = 128  !lshift(1, 7)                !! clamp control to specified range
+    enumerator :: mjDSBL_WARMSTART    = 256  !lshift(1, 8)                !! warmstart constraint solver
+    enumerator :: mjDSBL_FILTERPARENT = 512  !lshift(1, 9)                !! remove collisions with parent body
+    enumerator :: mjDSBL_ACTUATION    = 1024 !lshift(1, 10)               !! apply actuation forces
+    enumerator :: mjDSBL_REFSAFE      = 2048 !lshift(1, 11)               !! integrator safety: make ref[0]>=2*timestep
 
     enumerator :: mjNDISABLE          = 12                          !! number of disable flags
   end enum
 
   enum, bind(c) !!mjtEnableBit_ {      !! enable optional feature bitflags
-    enumerator :: mjENBL_OVERRIDE     = lshift(1, 0)                !! override contact parameters
-    enumerator :: mjENBL_ENERGY       = lshift(1, 1)                !! energy computation
-    enumerator :: mjENBL_FWDINV       = lshift(1, 2)                !! record solver statistics
-    enumerator :: mjENBL_SENSORNOISE  = lshift(1, 3)                !! add noise to sensor data
+    enumerator :: mjENBL_OVERRIDE     = 1 !lshift(1, 0)                !! override contact parameters
+    enumerator :: mjENBL_ENERGY       = 2 !lshift(1, 1)                !! energy computation
+    enumerator :: mjENBL_FWDINV       = 4 !lshift(1, 2)                !! record solver statistics
+    enumerator :: mjENBL_SENSORNOISE  = 8 !lshift(1, 3)                !! add noise to sensor data
     enumerator :: mjNENABLE           = 4                           !! number of enable flags
   end enum
 
@@ -334,7 +334,7 @@ module mod_mjmodel
     integer(c_int)      :: nfile                  !! number of files present
     character(len=1, kind=c_char), dimension(mjMAXVFS, mjMAXVFSNAME) :: filename !! file name without path
     integer(c_int)      :: filesize(mjMAXVFS)     !! file size in bytes
-    type(c_ptr)         :: filedata(mjMAXVFS)               !(mjMAXVFS)     !! buffer with file data
+    type(c_ptr)         :: filedata               !(mjMAXVFS)     !! buffer with file data
   end type mjVFS
 
 

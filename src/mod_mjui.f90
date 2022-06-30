@@ -208,21 +208,21 @@ module mod_mjui
   end type mjuiItemEdit
 
 
-  type, bind(c) :: mjuiItemSingle_
-    type(mjuiItemSingle) :: single !! check and button
-  end type mjuiItemSingle_
+  ! type, bind(c) :: mjuiItemSingle_
+  !   type(mjuiItemSingle) :: single !! check and button
+  ! end type mjuiItemSingle_
   
-  type, bind(c) :: mjuiItemMulti_
-    type(mjuiItemMulti) :: multi  !! static, radio and select
-  end type mjuiItemMulti_
+  ! type, bind(c) :: mjuiItemMulti_
+  !   type(mjuiItemMulti) :: multi  !! static, radio and select
+  ! end type mjuiItemMulti_
 
-  type, bind(c) :: mjuiItemSlider_
-    type(mjuiItemMulti) :: slider !! slider
-  end type mjuiItemSlider_
+  ! type, bind(c) :: mjuiItemSlider_
+  !   type(mjuiItemMulti) :: slider !! slider
+  ! end type mjuiItemSlider_
 
-  type, bind(c) :: mjuiItemEdit_
-    type(mjuiItemMulti) :: edit !! edit
-  end type mjuiItemEdit_
+  ! type, bind(c) :: mjuiItemEdit_
+  !   type(mjuiItemMulti) :: edit !! edit
+  ! end type mjuiItemEdit_
 
   type, bind(c) :: mjuiItem                !! UI item
     !! common properties
@@ -240,10 +240,10 @@ module mod_mjui
     !   struct mjuiItemSlider_ slider; // slider
     !   struct mjuiItemEdit_ edit;     // edit
     ! };
-    type(mjuiItemSingle_)         :: mjuiItemSingle_  !! check and button
-    type(mjuiItemMulti_)          :: multi            !! static, radio and select
-    type(mjuiItemSlider_)         :: slider           !! slider
-    type(mjuiItemEdit_)           :: edit             !! edit
+    type(mjuiItemSingle)           :: single           !! check and button
+    type(mjuiItemMulti)            :: multi            !! static, radio and select
+    type(mjuiItemSlider)           :: slider           !! slider
+    type(mjuiItemEdit)             :: edit             !! edit
 
     !! internal
     type(mjrRect)                  :: rect                   !! rectangle occupied by item

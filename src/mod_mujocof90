@@ -6,6 +6,7 @@ module mod_mujoco
   use mod_mjtnum
   use mod_mjui
   use mod_mjvisualize
+
   implicit none
   
   integer(c_int), parameter :: mjVERSION_HEADER = 213
@@ -38,31 +39,39 @@ module mod_mujoco
   end interface
 
   ! callbacks extending computation pipeline
-  type(c_funptr) :: mjcb_passive
-  type(c_funptr) :: mjcb_control
-  type(c_funptr) :: mjcb_contactfilter
-  type(c_funptr) :: mjcb_sensor
-  type(c_funptr) :: mjcb_time
-  type(c_funptr) :: mjcb_act_dyn
-  type(c_funptr) :: mjcb_act_gain
-  type(c_funptr) :: mjcb_act_bias
+  type(c_funptr), bind(C, name="mjcb_passive") :: mjcb_passive
+  type(c_funptr), bind(C, name="mjcb_control") :: mjcb_control
+  type(c_funptr), bind(C, name="mjcb_contactfilter") :: mjcb_contactfilter
+  type(c_funptr), bind(C, name="mjcb_sensor") :: mjcb_sensor
+  type(c_funptr), bind(C, name="mjcb_time") :: mjcb_time
+  type(c_funptr), bind(C, name="mjcb_act_dyn") :: mjcb_act_dyn
+  type(c_funptr), bind(C, name="mjcb_act_gain") :: mjcb_act_gain
+  type(c_funptr), bind(C, name="mjcb_act_bias") :: mjcb_act_bias
 
 
   ! collision function table
-  type :: collision_func_ptrs
-    type(c_funptr) :: func_ptr  
-  end type collision_func_ptrs
-  type(collision_func_ptrs) :: mjCOLLISIONFUNC(mjNGEOMTYPES, mjNGEOMTYPES)
+  ! type :: collision_func_ptrs
+  !   type(c_funptr) :: func_ptr  
+  ! end type collision_func_ptrs
+  ! type(collision_func_ptrs) :: mjCOLLISIONFUNC(mjNGEOMTYPES, mjNGEOMTYPES)
+  type(C_PTR), public, bind(C, name="mjCOLLISIONFUNC") :: mjCOLLISIONFUNC
 
   
   ! string names
-  character(kind=c_char) :: mjDISABLESTRING(mjNDISABLE)
-  character(kind=c_char) :: mjENABLESTRING(mjNENABLE)
-  character(kind=c_char) :: mjTIMERSTRING(mjNTIMER)
-  character(kind=c_char) :: mjLABELSTRING(mjNLABEL)
-  character(kind=c_char) :: mjFRAMESTRING(mjNFRAME)
-  character(kind=c_char) :: mjVISSTRING(3, mjNVISFLAG)
-  character(kind=c_char) :: mjRNDSTRING(3, mjNRNDFLAG)
+  ! character(kind=c_char) :: mjDISABLESTRING(mjNDISABLE)
+  ! character(kind=c_char) :: mjENABLESTRING(mjNENABLE)
+  ! character(kind=c_char) :: mjTIMERSTRING(mjNTIMER)
+  ! character(kind=c_char) :: mjLABELSTRING(mjNLABEL)
+  ! character(kind=c_char) :: mjFRAMESTRING(mjNFRAME)
+  ! character(kind=c_char) :: mjVISSTRING(3, mjNVISFLAG)
+  ! character(kind=c_char) :: mjRNDSTRING(3, mjNRNDFLAG)
+  type(C_PTR), public, bind(C, name="mjDISABLESTRING") :: mjDISABLESTRING
+  type(C_PTR), public, bind(C, name="mjENABLESTRING")  :: mjENABLESTRING
+  type(C_PTR), public, bind(C, name="mjTIMERSTRING") :: mjTIMERSTRING
+  type(C_PTR), public, bind(C, name="mjLABELSTRING") :: mjLABELSTRING
+  type(C_PTR), public, bind(C, name="mjFRAMESTRING") :: mjFRAMESTRING
+  type(C_PTR), public, bind(C, name="mjVISSTRING") :: mjVISSTRING
+  type(C_PTR), public, bind(C, name="mjRNDSTRING") :: mjRNDSTRING
 
   
   interface
@@ -883,7 +892,7 @@ module mod_mujoco
     ! MJAPI int mj_name2id(const mjModel* m, int type, const char* name)
     integer(c_int) function mj_name2id(m, type, name) bind(c)
       import :: c_int, mjModel, c_char
-      type(mjModel), value, intent(in)  :: m
+      type(mjModel), intent(in)         :: m !type(mjModel), value, intent(in)  :: m
       integer(c_int), value, intent(in) :: type
       character(c_char), intent(in)     :: name(*)
     end function mj_name2id
@@ -1235,9 +1244,9 @@ module mod_mujoco
 
     ! !! Return the average of two OpenGL cameras.
     ! MJAPI mjvGLCamera mjv_averageCamera(const mjvGLCamera* cam1, const mjvGLCamera* cam2)
-    type(mjvGLCamera) function mjv_averageCamera(cam1, cam2) bind(c)
+    type(mjvGLCamera) function mjv_averageCamera(cam1, cam2) bind(c, name="mjv_averageCamera")
       import :: mjvGLCamera
-      type(mjvGLCamera), value, intent(in) :: cam1, cam2
+      type(mjvGLCamera),  intent(in) :: cam1, cam2
     end function mjv_averageCamera
 
     ! !! Select geom or skin with mouse, return bodyid -1: none selected.
@@ -1308,7 +1317,7 @@ module mod_mujoco
       import :: mjModel, mjvScene, c_int
       type(mjModel), intent(in)           :: m
       type(mjvScene), intent(inout)       :: scn
-      integer(c_int), value, intent(in)   :: maxgeom
+      integer(c_int), intent(in), value   :: maxgeom
     end subroutine mjv_makeScene
 
     !! Free abstract scene.
@@ -1321,14 +1330,14 @@ module mod_mujoco
     !! Update entire scene given model state.
     ! MJAPI void mjv_updateScene(const mjModel* m, mjData* d, const mjvOption* opt,
                               ! const mjvPerturb* pert, mjvCamera* cam, int catmask, mjvScene* scn)
-    subroutine mjv_updateScene(m, d, opt, pert, cam, cammask, scn) bind(c, name="mjv_updateScene")
+    subroutine mjv_updateScene(m, d, opt, pert, cam, catmask, scn) bind(c, name="mjv_updateScene")
       import :: mjModel, mjData, mjvOption, mjvPerturb, mjvCamera, mjvScene, c_int
       type(mjModel), intent(in)               :: m
       type(mjData), intent(inout)             :: d
       type(mjvOption), intent(in)             :: opt
       type(mjvPerturb), intent(in), optional  :: pert
       type(mjvCamera), intent(inout)          :: cam
-      integer(c_int), value, intent(in)       :: cammask
+      integer(c_int), value, intent(in)       :: catmask
       type(mjvScene), intent(inout)           :: scn
     end subroutine mjv_updateScene
 
@@ -1577,6 +1586,16 @@ module mod_mujoco
       type(mjvScene), intent(inout)       :: scn
       type(mjrContext), intent(in)        :: con
     end subroutine mjr_render
+
+    !! Render 3D scene. --- MY ADDITION
+    ! MJAPI void mjr_render(mjrRect viewport, mjvScene* scn, const mjrContext* con, mjvGLCamera* cam)
+    subroutine mjr_render_fortran(viewport, scn, con, cam) bind(c, name="mjr_render_fortran")
+      import :: mjrRect, mjvScene, mjrContext, mjvGLCamera
+      type(mjrRect), intent(inout)        :: viewport
+      type(mjvScene), intent(inout)       :: scn
+      type(mjrContext), intent(in)        :: con
+      type(mjvGLCamera), intent(inout)    :: cam
+    end subroutine mjr_render_fortran
 
     !! Call glFinish.
     ! MJAPI void mjr_finish(void)
@@ -2485,5 +2504,84 @@ module mod_mujoco
       real(mjtNum), value, intent(in)     :: x
     end function mju_sigmoid
   end interface
+
+contains
+
+subroutine render(viewport, scn, con)
+  type(mjrRect), intent(inout)        :: viewport
+  type(mjvScene), intent(inout)       :: scn
+  type(mjrContext), intent(in)        :: con
+
+  integer(c_int)          :: stereo, nt, ngeom, nlight
+  integer(c_int)          :: drawbuffer
+  type(mjvGLCamera)       :: cam
+  real(c_double)          :: hpos(0:2), hfwd(0:2)
+  real(c_float)           :: temp(0:3), headpos(0:2), forward(0:2), skyboxdst
+  real(c_float)           :: camProject(0:15), camView(0:15), lightProject(0:15), lightView(0:15)
+  real(c_double)          :: clipplane(0:3)
+  real(c_float)           :: biasMatrix(0:15)
+  real(c_float)           :: tempMatrix(0:15), textureMatrix(0:15)
+  type(mjvGeom)           :: thisgeom, tempgeom
+  type(mjvLight)          :: thislight
+
+  integer(c_int)          :: nskin_index
+  ! integer(GLuint), pointer:: skinvertVBO(:)
+
+
+  ngeom  = scn%ngeom
+  nlight = min( mjMAXLIGHT, scn%nlight )
+  biasMatrix    = 0
+  biasMatrix(0) = 0.5_c_float
+  biasMatrix(5) = 0.5_c_float
+  biasMatrix(10) = 0.5_c_float
+  biasMatrix(12) = 0.5_c_float
+  biasMatrix(13) = 0.5_c_float
+  biasMatrix(14) = 0.5_c_float
+  biasMatrix(15) = 1.0_c_float
+
+  ! Empty viewport: nothing to do
+  if ( (viewport%width <= 0) .or. (viewport%height <= 0) ) return
+
+  ! Aerage cameras
+  cam = mjv_averageCamera( scn%camera(1), scn%camera(2) )
+
+  print *, "cam%frustum_near: ", cam%frustum_near
+  
+  ! Check znear
+  if ( cam%frustum_near < mjMINVAL ) then
+    !! geoms: error
+    if (scn%ngeom > 0) then
+      call mju_error( "mjvScene frustum_near too small in mjr_render"//c_null_char )
+    else
+      !! no geoms: return silently
+      return
+    end if
+  end if
+
+!   ! Upload dynamic skin data to GPU
+!   call c_f_pointer( con%skinvertVBO, skinvertVBO, [scn%nskin] );
+
+!   scn%skinv
+!   print *, "skinvertVBO = ", scn%nskin !skinvertVBO
+!   stop
+!   do nskin_index = 1, scn%nskin
+!     !! Upload positions to VBO
+!     call glBindBuffer( GL_ARRAY_BUFFER, skinvertVBO(nskin_index) )
+!     call glBufferData( GL_ARRAY_BUFFER,
+!                3*scn->skinvertnum[i]*sizeof(float),
+! !                scn->skinvert + 3*scn->skinvertadr[i],
+! !                GL_STREAM_DRAW);
+
+! !   // upload normals to VBO
+! !   glBindBuffer(GL_ARRAY_BUFFER, con->skinnormalVBO[i]);
+! !   glBufferData(GL_ARRAY_BUFFER,
+! !                3*scn->skinvertnum[i]*sizeof(float),
+! !                scn->skinnormal + 3*scn->skinvertadr[i],
+! !                GL_STREAM_DRAW);
+! ! }
+!   end do
+
+  print *, "Exiting RENDER subroutine"
+end subroutine render
   
 end module mod_mujoco

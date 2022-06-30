@@ -265,6 +265,11 @@ module mod_mjdata
     type(c_ptr)               :: subtree_linvel       !! linear velocity of subtree com           (nbody x 3)
     type(c_ptr)               :: subtree_angmom       !! angular momentum about subtree com       (nbody x 3)
 
+    type(c_ptr)               :: D_rownnz
+    type(c_ptr)               :: D_rowadr
+    type(c_ptr)               :: D_colind
+    type(c_ptr)               :: qDeriv
+    type(c_ptr)               :: qLU
     !!-------------------------------- POSITION, VELOCITY, CONTROL/ACCELERATION dependent
 
     !! computed by mj_fwdActuation
@@ -272,13 +277,13 @@ module mod_mjdata
     type(c_ptr)               :: qfrc_actuator        !! actuator force                           (nv x 1)
 
     !! computed by mj_fwdAcceleration
-    type(c_ptr)               :: qfrc_unc             !! net unconstrained force                  (nv x 1)
-    type(c_ptr)               :: qacc_unc             !! unconstrained acceleration               (nv x 1)
+    type(c_ptr)               :: qfrc_smooth             !! net unconstrained force                  (nv x 1)
+    type(c_ptr)               :: qacc_smooth             !! unconstrained acceleration               (nv x 1)
 
     !! computed by mj_fwdConstraint/mj_inverse
     type(c_ptr)               :: efc_b                !! linear cost term: J*qacc_unc - aref      (njmax x 1)
     type(c_ptr)               :: efc_force            !! constraint force in constraint space     (njmax x 1)
-    type(c_ptr)               ::    efc_state            !! constraint state (mjtConstraintState)    (njmax x 1)
+    type(c_ptr)               :: efc_state            !! constraint state (mjtConstraintState)    (njmax x 1)
     type(c_ptr)               :: qfrc_constraint      !! constraint force                         (nv x 1)
 
     !! computed by mj_inverse

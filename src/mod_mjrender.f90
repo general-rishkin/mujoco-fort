@@ -109,7 +109,7 @@ module mod_mjrender
 
     !! skin VBOs
     integer(c_int)                      :: nskin                      !! number of skins
-    type(c_ptr)                         :: skinvertVBO      !! skin vertex position VBOs
+    type(c_ptr)                         :: skinvertVBO      !! skin vertex position VBOs  //nskin floats - my addition
     type(c_ptr)                         :: skinnormalVBO    !! skin vertex normal VBOs
     type(c_ptr)                         :: skintexcoordVBO  !! skin vertex texture coordinate VBOs
     type(c_ptr)                         :: skinfaceVBO      !! skin face index VBOs

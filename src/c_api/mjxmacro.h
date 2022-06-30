@@ -20,28 +20,28 @@
 
 // scalar fields of mjOption
 #define MJOPTION_FLOATS             \
-    X( mjtNum,  timestep        )   \
-    X( mjtNum,  apirate         )   \
-    X( mjtNum,  impratio        )   \
-    X( mjtNum,  tolerance       )   \
+    X( mjtNum,  timestep         )  \
+    X( mjtNum,  apirate          )  \
+    X( mjtNum,  impratio         )  \
+    X( mjtNum,  tolerance        )  \
     X( mjtNum,  noslip_tolerance )  \
-    X( mjtNum,  mpr_tolerance   )   \
-    X( mjtNum,  density         )   \
-    X( mjtNum,  viscosity       )   \
-    X( mjtNum,  o_margin        )   \
+    X( mjtNum,  mpr_tolerance    )  \
+    X( mjtNum,  density          )  \
+    X( mjtNum,  viscosity        )  \
+    X( mjtNum,  o_margin         )  \
 
 
 #define MJOPTION_INTS               \
-    X( int,     integrator      )   \
-    X( int,     collision       )   \
-    X( int,     cone            )   \
-    X( int,     jacobian        )   \
-    X( int,     solver          )   \
-    X( int,     iterations      )   \
+    X( int,     integrator        ) \
+    X( int,     collision         ) \
+    X( int,     cone              ) \
+    X( int,     jacobian          ) \
+    X( int,     solver            ) \
+    X( int,     iterations        ) \
     X( int,     noslip_iterations ) \
-    X( int,     mpr_iterations  )   \
-    X( int,     disableflags    )   \
-    X( int,     enableflags     )
+    X( int,     mpr_iterations    ) \
+    X( int,     disableflags      ) \
+    X( int,     enableflags       )
 
 
 #define MJOPTION_SCALARS            \
@@ -112,6 +112,7 @@
     X( nuser_sensor )       \
     X( nnames )             \
     X( nM )                 \
+    X( nD )                 \
     X( nemax )              \
     X( njmax )              \
     X( nconmax )            \
@@ -351,11 +352,13 @@
     X( int,     actuator_group,        nu,            1                    ) \
     X( mjtByte, actuator_ctrllimited,  nu,            1                    ) \
     X( mjtByte, actuator_forcelimited, nu,            1                    ) \
+    X( mjtByte, actuator_actlimited,   nu,            1                    ) \
     X( mjtNum,  actuator_dynprm,       nu,            mjNDYN               ) \
     X( mjtNum,  actuator_gainprm,      nu,            mjNGAIN              ) \
     X( mjtNum,  actuator_biasprm,      nu,            mjNBIAS              ) \
     X( mjtNum,  actuator_ctrlrange,    nu,            2                    ) \
     X( mjtNum,  actuator_forcerange,   nu,            2                    ) \
+    X( mjtNum,  actuator_actrange,     nu,            2                    ) \
     X( mjtNum,  actuator_gear,         nu,            6                    ) \
     X( mjtNum,  actuator_cranklength,  nu,            1                    ) \
     X( mjtNum,  actuator_acc0,         nu,            1                    ) \
@@ -506,10 +509,15 @@
     X( mjtNum,    efc_aref,          njmax,       1           ) \
     X( mjtNum,    subtree_linvel,    nbody,       3           ) \
     X( mjtNum,    subtree_angmom,    nbody,       3           ) \
+    X( int,       D_rownnz,          nv,          1           ) \
+    X( int,       D_rowadr,          nv,          1           ) \
+    X( int,       D_colind,          nD,          1           ) \
+    X( mjtNum,    qDeriv,            nD,          1           ) \
+    X( mjtNum,    qLU,               nD,          1           ) \
     X( mjtNum,    actuator_force,    nu,          1           ) \
     X( mjtNum,    qfrc_actuator,     nv,          1           ) \
-    X( mjtNum,    qfrc_unc,          nv,          1           ) \
-    X( mjtNum,    qacc_unc,          nv,          1           ) \
+    X( mjtNum,    qfrc_smooth,       nv,          1           ) \
+    X( mjtNum,    qacc_smooth,       nv,          1           ) \
     X( mjtNum,    efc_b,             njmax,       1           ) \
     X( mjtNum,    efc_force,         njmax,       1           ) \
     X( int,       efc_state,         njmax,       1           ) \

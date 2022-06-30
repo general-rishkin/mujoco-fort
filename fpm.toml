@@ -1,12 +1,12 @@
 name = "mujoco-fort"
 version = "0.1.0"
-license = "license"
+license = "MIT"
 author = "Gennadiy Rishkin"
 maintainer = "gennadiy.rishkin@gmail.com"
-copyright = "Copyright 2022, Gennadiy Rishkin"
+copyright = "Copyright 2022, Gennadiy rishkin"
 
 [build]
-link=["mujoco", "GL", "glew", "glfw", "m"]
+link=["mujoco", "GL", "GLEW", "glfw", "m"]
 
 
 auto-executables = false #true
@@ -18,7 +18,16 @@ auto-examples = true
 library = false
 
 [[ executable ]]
-name="test_mujoco"
+name="basis"
 source-dir="app"
-main="main_mujoco_test.f90"
+main="basis.f90"
 
+# [[ executable ]]
+# name="test_mujoco"
+# source-dir="app"
+# main="main_mujoco_test.f90"
+
+# [[ executable ]]
+# name="test_speed"
+# source-dir="app"
+# main="main_test_speed.f90"
