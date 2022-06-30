@@ -99,7 +99,7 @@ module mod_mujoco
       type(c_ptr), value :: vfs
     end subroutine mj_defaultVFS
 
-    !! Add file to VFS, return 0: success, 1: full, 2: repeated name, -1: not found on disk.
+    !! Add file to VFS, return 0: success, 1: full, 2: repeated name, -1: failed to load.
     ! MJAPI int mj_addFileVFS(mjVFS* vfs, const char* directory, const char* filename)
     integer(c_int) function mj_addFileVFS(vfs, directory, filename) bind(c)
       import :: mjVFS, c_char, c_int
@@ -146,12 +146,13 @@ module mod_mujoco
     !! If vfs is not NULL, look up files in vfs before reading from disk.
     !! If error is not NULL, it must have size error_sz.
     ! MJAPI mjModel* mj_loadXML(const char* filename, const mjVFS* vfs, char* error, int error_sz)
-    type(c_ptr) function mj_loadXML(filename, vfs, error, error_sz) bind(c, name="mj_loadXML")
-      import :: mjVFS, c_char, c_int, c_ptr
-      character(c_char), intent(in)     :: filename(*)
-      type(mjVFS), intent(in), optional :: vfs
-      character(c_char), intent(inout)  :: error(*)
-      integer(c_int), value, intent(in) :: error_sz
+    function mj_loadXML(filename, vfs, error, error_sz) result(model) bind(C, name="mj_loadXML")
+      import :: c_char, c_ptr, c_int
+      character(c_char), intent(IN)     :: filename(*)
+      type(c_ptr), value                :: vfs
+      character(c_char), intent(INOUT)  :: error(*)
+      integer(C_INT), value, intent(IN) :: error_sz
+      type(c_ptr)                       :: model
     end function mj_loadXML
 
     !! Update XML data structures with info from low-level model, save as MJCF.
@@ -184,44 +185,44 @@ module mod_mujoco
     !! Advance simulation, use control callback to obtain external force and control.
     ! MJAPI void mj_step(const mjModel* m, mjData* d)
     subroutine mj_step(m, d) bind(c, name="mj_step")
-      import :: mjModel, mjData
-      type(mjModel), intent(in)         :: m
-      type(mjData), intent(inout)       :: d
+      import :: c_ptr
+      type(c_ptr), intent(IN), value :: m
+      type(c_ptr), value :: d
     end subroutine mj_step
 
     !! Advance simulation in two steps: before external force and control is set by user.
     ! MJAPI void mj_step1(const mjModel* m, mjData* d)
     subroutine mj_step1(m, d) bind(c, name="mj_step1")
-      import :: mjModel, mjData
-      type(mjModel), intent(in)         :: m
-      type(mjData), intent(inout)       :: d
+      import :: c_ptr
+      type(c_ptr), intent(IN), value :: m
+      type(c_ptr), value :: d
     end subroutine mj_step1
 
     !! Advance simulation in two steps: after external force and control is set by user.
     ! MJAPI void mj_step2(const mjModel* m, mjData* d)
     subroutine mj_step2(m, d) bind(c, name="mj_step2")
-      import :: mjModel, mjData
-      type(mjModel), intent(in)         :: m
-      type(mjData), intent(inout)       :: d
+      import :: c_ptr
+      type(c_ptr), intent(IN), value :: m
+      type(c_ptr), value :: d
     end subroutine mj_step2
 
     !! Forward dynamics: same as mj_step but do not integrate in time.
     ! MJAPI void mj_forward(const mjModel* m, mjData* d)
     subroutine mj_forward(m, d) bind(c, name="mj_forward")
-      import :: mjModel, mjData
-      type(mjModel), intent(in)        :: m
-      type(mjData), intent(inout)      :: d
+      import :: c_ptr
+      type(c_ptr), intent(IN), value :: m
+      type(c_ptr), value :: d
     end subroutine mj_forward
 
     !! Inverse dynamics: qacc must be set before calling.
     ! MJAPI void mj_inverse(const mjModel* m, mjData* d)
     subroutine mj_inverse(m, d) bind(c, name="mj_inverse")
-      import :: mjModel, mjData
-      type(mjModel), intent(in)         :: m
-      type(mjData), intent(inout)       :: d
+      import :: c_ptr
+      type(c_ptr), intent(IN), value :: m
+      type(c_ptr), value :: d
     end subroutine mj_inverse
 
-    !! Forward dynamics with skip skipstage is mjtStage.
+    !! Forward dynamics with skip; skipstage is mjtStage.
     ! MJAPI void mj_forwardSkip(const mjModel* m, mjData* d, int skipstage, int skipsensor)
     subroutine mj_forwardSkip(m, d, skipstage, skipsensor) bind(c, name="mj_forwardSkip")
       import :: mjModel, mjData, c_int
@@ -230,7 +231,7 @@ module mod_mujoco
       integer(c_int), value, intent(in) :: skipstage, skipsensor
     end subroutine mj_forwardSkip
 
-    !! Inverse dynamics with skip skipstage is mjtStage.
+    !! Inverse dynamics with skip; skipstage is mjtStage.
     ! MJAPI void mj_inverseSkip(const mjModel* m, mjData* d, int skipstage, int skipsensor)
     subroutine mj_inverseSkip(m, d, skipstage, skipsensor) bind(c, name="mj_inverseSkip")
       import :: mjModel, mjData, c_int
@@ -314,9 +315,10 @@ module mod_mujoco
     !! Allocate mjData correponding to given model.
     !! If the model buffer is unallocated the initial configuration will not be set.
     ! MJAPI mjData* mj_makeData(const mjModel* m)
-    type(c_ptr) function mj_makeData(m) bind(c, name="mj_makeData")
-      import :: c_ptr, mjModel
-      type(mjModel), intent(in)  :: m
+    function mj_makeData(m) result(data) bind(C, name="mj_makeData")
+      import :: C_PTR
+      type(c_ptr), value  :: m
+      type(c_ptr)         :: data
     end function mj_makeData
 
     !! Copy mjData.
@@ -469,7 +471,7 @@ module mod_mujoco
       type(mjData), intent(inout)       :: d
     end subroutine mj_fwdVelocity
 
-    !! Compute actuator force qfrc_actuation.
+    !! Compute actuator force qfrc_actuator.
     ! MJAPI void mj_fwdActuation(const mjModel* m, mjData* d)
     subroutine mj_fwdActuation(m, d) bind(c)
       import :: mjModel, mjData
@@ -1004,7 +1006,7 @@ module mod_mujoco
       real(mjtNum), value, intent(in)   :: qvel, dt
     end subroutine mj_integratePos
 
-    !! Normalize all quaterions in qpos-type vector.
+    !! Normalize all quaternions in qpos-type vector.
     ! MJAPI void mj_normalizeQuat(const mjModel* m, mjtNum* qpos)
     subroutine mj_normalizeQuat(m, qpos) bind(c)
       import :: mjModel, mjtNum
@@ -1109,9 +1111,9 @@ module mod_mujoco
 
     !! Set default camera.
     ! MJAPI void mjv_defaultCamera(mjvCamera* cam)
-    subroutine mjv_defaultCamera(cam) bind(c, name="mjv_defaultCamera")
-      import :: mjvCamera
-      type(mjvCamera), intent(inout)  :: cam
+    subroutine mjv_defaultCamera(cam) bind(C, name="mjv_defaultCamera")
+      import :: c_ptr
+      type(c_ptr), intent(in), value :: cam
     end subroutine mjv_defaultCamera
 
     !! Set default perturbation.
@@ -1269,9 +1271,9 @@ module mod_mujoco
 
     !! Set default visualization options.
     ! MJAPI void mjv_defaultOption(mjvOption* opt)
-    subroutine mjv_defaultOption(opt) bind(c, name="mjv_defaultOption")
-      import :: mjvOption
-      type(mjvOption), intent(inout)       :: opt
+    subroutine mjv_defaultOption(opt) bind(C, name="mjv_defaultOption")
+      import :: c_ptr
+      type(c_ptr), intent(IN), value :: opt
     end subroutine mjv_defaultOption
 
     !! Set default figure.
@@ -1307,17 +1309,17 @@ module mod_mujoco
     !! Set default abstract scene.
     ! MJAPI void mjv_defaultScene(mjvScene* scn)
     subroutine mjv_defaultScene(scn) bind(c, name="mjv_defaultScene")
-      import :: mjvScene
-      type(mjvScene), intent(inout)       :: scn
+      import :: c_ptr
+      type(c_ptr), intent(in), value :: scn
     end subroutine mjv_defaultScene
 
     !! Allocate resources in abstract scene.
     ! MJAPI void mjv_makeScene(const mjModel* m, mjvScene* scn, int maxgeom)
     subroutine mjv_makeScene(m, scn, maxgeom) bind(c, name="mjv_makeScene")
-      import :: mjModel, mjvScene, c_int
-      type(mjModel), intent(in)           :: m
-      type(mjvScene), intent(inout)       :: scn
-      integer(c_int), intent(in), value   :: maxgeom
+      import :: c_ptr, C_INT
+      type(c_ptr), intent(IN), value :: m
+      type(c_ptr), value :: scn
+      integer(C_INT), value, intent(IN) :: maxgeom
     end subroutine mjv_makeScene
 
     !! Free abstract scene.
@@ -1331,14 +1333,14 @@ module mod_mujoco
     ! MJAPI void mjv_updateScene(const mjModel* m, mjData* d, const mjvOption* opt,
                               ! const mjvPerturb* pert, mjvCamera* cam, int catmask, mjvScene* scn)
     subroutine mjv_updateScene(m, d, opt, pert, cam, catmask, scn) bind(c, name="mjv_updateScene")
-      import :: mjModel, mjData, mjvOption, mjvPerturb, mjvCamera, mjvScene, c_int
-      type(mjModel), intent(in)               :: m
-      type(mjData), intent(inout)             :: d
-      type(mjvOption), intent(in)             :: opt
-      type(mjvPerturb), intent(in), optional  :: pert
-      type(mjvCamera), intent(inout)          :: cam
-      integer(c_int), value, intent(in)       :: catmask
-      type(mjvScene), intent(inout)           :: scn
+      import :: c_ptr, c_int
+      type(c_ptr), intent(IN), value    :: m
+      type(c_ptr), value                :: d
+      type(c_ptr), intent(IN), value    :: opt
+      type(c_ptr), intent(IN), value    :: pert
+      type(c_ptr), value                :: cam
+      integer(C_INT), value, intent(IN) :: catmask
+      type(c_ptr), value                :: scn
     end subroutine mjv_updateScene
 
     !! Add geoms from selected categories.
@@ -1387,17 +1389,18 @@ module mod_mujoco
     !! Set default mjrContext.
     ! MJAPI void mjr_defaultContext(mjrContext* con)
     subroutine mjr_defaultContext(con) bind(c, name="mjr_defaultContext")
-      import ::mjrContext
-      type(mjrContext), intent(inout)     :: con
+      import :: c_ptr
+      type(c_ptr), intent(IN), value :: con
     end subroutine mjr_defaultContext
 
     !! Allocate resources in custom OpenGL context fontscale is mjtFontScale.
     ! MJAPI void mjr_makeContext(const mjModel* m, mjrContext* con, int fontscale)
     subroutine mjr_makeContext(m, con, fontscale) bind(c, name="mjr_makeContext")
-      import :: mjModel, mjrContext, c_int
-      type(mjModel), intent(in)           :: m
-      type(mjrContext), intent(inout)     :: con
-      integer(c_int), value, intent(in)   :: fontscale
+      import :: C_INT, c_ptr
+      implicit none
+      type(c_ptr), intent(IN), value :: m
+      type(c_ptr), value :: con
+      integer(C_INT), value, intent(IN) :: fontscale
     end subroutine mjr_makeContext
 
     !! Change font of existing context.
@@ -1581,10 +1584,10 @@ module mod_mujoco
     !! Render 3D scene.
     ! MJAPI void mjr_render(mjrRect viewport, mjvScene* scn, const mjrContext* con)
     subroutine mjr_render(viewport, scn, con) bind(c, name="mjr_render")
-      import :: mjrRect, mjvScene, mjrContext
-      type(mjrRect), intent(inout)        :: viewport
-      type(mjvScene), intent(inout)       :: scn
-      type(mjrContext), intent(in)        :: con
+      import :: c_ptr, mjrRect
+        type(mjrRect), value, intent(IN) :: viewport
+        type(c_ptr), value               :: scn
+        type(c_ptr), intent(IN), value   :: con
     end subroutine mjr_render
 
     !! Render 3D scene. --- MY ADDITION
@@ -1741,7 +1744,7 @@ module mod_mujoco
     subroutine mju_clearHandlers() bind(c)
     end subroutine mju_clearHandlers
 
-    !! Allocate memory byte-align on 8 pad size to multiple of 8.
+    !! Allocate memory byte-align on 64; pad size to multiple of 64.
     ! MJAPI void* mju_malloc(size_t size)
     type(c_ptr) function mju_malloc(size) bind(c)
       import :: c_ptr, c_size_t
@@ -1771,7 +1774,20 @@ module mod_mujoco
       character(c_char), intent(in)       :: msg(*)
     end subroutine mju_writeLog
 
-    
+    !---------------------------------- Activation ----------------------------------------------------
+
+    ! !! Return 1 (for backward compatibility).
+    ! ! MJAPI int mj_activate(const char* filename);
+    ! integer(c_int) function mj_activate(filename) bind(c, name="mj_activate")
+    !   import :: c_int, c_char
+    !   character(c_char), intent(in)       :: filename(*)
+    ! end function mj_activate
+
+    !! Do nothing (for backward compatibility).
+    !MJAPI void mj_deactivate(void);
+    ! subroutine mj_deactivate() bind(c, name="mj_deactivate")
+    ! end subroutine mj_deactivate
+
     !---------------------------------- Vector math ---------------------------------------------------
 
     !! Set res = 0.
@@ -2151,7 +2167,7 @@ module mod_mujoco
       real(mjtNum), intent(in)            :: quat(4)
     end subroutine mju_negQuat
 
-    !! Muiltiply quaternions.
+    !! Multiply quaternions.
     ! MJAPI void mju_mulQuat(mjtNum res[4], const mjtNum quat1[4], const mjtNum quat2[4])
     subroutine mju_mulQuat(res, quat1, quat2) bind(c)
       import :: mjtNum
@@ -2159,7 +2175,7 @@ module mod_mujoco
       real(mjtNum), intent(in)            :: quat1(4), quat2(4)
     end subroutine mju_mulQuat
 
-    !! Muiltiply quaternion and axis.
+    !! Multiply quaternion and axis.
     ! MJAPI void mju_mulQuatAxis(mjtNum res[4], const mjtNum quat[4], const mjtNum axis[3])
     subroutine mju_mulQuatAxis(res, quat, axis) bind(c)
       import :: mjtNum
@@ -2201,7 +2217,7 @@ module mod_mujoco
       real(mjtNum), intent(in)            :: quat(4)
     end subroutine mju_quat2Mat
 
-    !! Convert 3D rotation matrix to quaterion.
+    !! Convert 3D rotation matrix to quaternion.
     ! MJAPI void mju_mat2Quat(mjtNum quat[4], const mjtNum mat[9])
     subroutine mju_mat2Quat(quat, mat) bind(c)
       import :: mjtNum
@@ -2217,7 +2233,7 @@ module mod_mujoco
       real(mjtNum), intent(in)            :: quat(4), vel(3)
     end subroutine mju_derivQuat
 
-    !! Integrate quaterion given 3D angular velocity.
+    !! Integrate quaternion given 3D angular velocity.
     ! MJAPI void mju_quatIntegrate(mjtNum quat[4], const mjtNum vel[3], mjtNum scale)
     subroutine mju_quatIntegrate(quat, vel, scale) bind(c)
       import :: mjtNum
@@ -2507,81 +2523,81 @@ module mod_mujoco
 
 contains
 
-subroutine render(viewport, scn, con)
-  type(mjrRect), intent(inout)        :: viewport
-  type(mjvScene), intent(inout)       :: scn
-  type(mjrContext), intent(in)        :: con
+! subroutine render(viewport, scn, con)
+!   type(mjrRect), intent(inout)        :: viewport
+!   type(mjvScene), intent(inout)       :: scn
+!   type(mjrContext), intent(in)        :: con
 
-  integer(c_int)          :: stereo, nt, ngeom, nlight
-  integer(c_int)          :: drawbuffer
-  type(mjvGLCamera)       :: cam
-  real(c_double)          :: hpos(0:2), hfwd(0:2)
-  real(c_float)           :: temp(0:3), headpos(0:2), forward(0:2), skyboxdst
-  real(c_float)           :: camProject(0:15), camView(0:15), lightProject(0:15), lightView(0:15)
-  real(c_double)          :: clipplane(0:3)
-  real(c_float)           :: biasMatrix(0:15)
-  real(c_float)           :: tempMatrix(0:15), textureMatrix(0:15)
-  type(mjvGeom)           :: thisgeom, tempgeom
-  type(mjvLight)          :: thislight
+!   integer(c_int)          :: stereo, nt, ngeom, nlight
+!   integer(c_int)          :: drawbuffer
+!   type(mjvGLCamera)       :: cam
+!   real(c_double)          :: hpos(0:2), hfwd(0:2)
+!   real(c_float)           :: temp(0:3), headpos(0:2), forward(0:2), skyboxdst
+!   real(c_float)           :: camProject(0:15), camView(0:15), lightProject(0:15), lightView(0:15)
+!   real(c_double)          :: clipplane(0:3)
+!   real(c_float)           :: biasMatrix(0:15)
+!   real(c_float)           :: tempMatrix(0:15), textureMatrix(0:15)
+!   type(mjvGeom)           :: thisgeom, tempgeom
+!   type(mjvLight)          :: thislight
 
-  integer(c_int)          :: nskin_index
-  ! integer(GLuint), pointer:: skinvertVBO(:)
+!   integer(c_int)          :: nskin_index
+!   ! integer(GLuint), pointer:: skinvertVBO(:)
 
 
-  ngeom  = scn%ngeom
-  nlight = min( mjMAXLIGHT, scn%nlight )
-  biasMatrix    = 0
-  biasMatrix(0) = 0.5_c_float
-  biasMatrix(5) = 0.5_c_float
-  biasMatrix(10) = 0.5_c_float
-  biasMatrix(12) = 0.5_c_float
-  biasMatrix(13) = 0.5_c_float
-  biasMatrix(14) = 0.5_c_float
-  biasMatrix(15) = 1.0_c_float
+!   ngeom  = scn%ngeom
+!   nlight = min( mjMAXLIGHT, scn%nlight )
+!   biasMatrix    = 0
+!   biasMatrix(0) = 0.5_c_float
+!   biasMatrix(5) = 0.5_c_float
+!   biasMatrix(10) = 0.5_c_float
+!   biasMatrix(12) = 0.5_c_float
+!   biasMatrix(13) = 0.5_c_float
+!   biasMatrix(14) = 0.5_c_float
+!   biasMatrix(15) = 1.0_c_float
 
-  ! Empty viewport: nothing to do
-  if ( (viewport%width <= 0) .or. (viewport%height <= 0) ) return
+!   ! Empty viewport: nothing to do
+!   if ( (viewport%width <= 0) .or. (viewport%height <= 0) ) return
 
-  ! Aerage cameras
-  cam = mjv_averageCamera( scn%camera(1), scn%camera(2) )
+!   ! Aerage cameras
+!   cam = mjv_averageCamera( scn%camera(1), scn%camera(2) )
 
-  print *, "cam%frustum_near: ", cam%frustum_near
+!   print *, "cam%frustum_near: ", cam%frustum_near
   
-  ! Check znear
-  if ( cam%frustum_near < mjMINVAL ) then
-    !! geoms: error
-    if (scn%ngeom > 0) then
-      call mju_error( "mjvScene frustum_near too small in mjr_render"//c_null_char )
-    else
-      !! no geoms: return silently
-      return
-    end if
-  end if
+!   ! Check znear
+!   if ( cam%frustum_near < mjMINVAL ) then
+!     !! geoms: error
+!     if (scn%ngeom > 0) then
+!       call mju_error( "mjvScene frustum_near too small in mjr_render"//c_null_char )
+!     else
+!       !! no geoms: return silently
+!       return
+!     end if
+!   end if
 
-!   ! Upload dynamic skin data to GPU
-!   call c_f_pointer( con%skinvertVBO, skinvertVBO, [scn%nskin] );
+! !   ! Upload dynamic skin data to GPU
+! !   call c_f_pointer( con%skinvertVBO, skinvertVBO, [scn%nskin] );
 
-!   scn%skinv
-!   print *, "skinvertVBO = ", scn%nskin !skinvertVBO
-!   stop
-!   do nskin_index = 1, scn%nskin
-!     !! Upload positions to VBO
-!     call glBindBuffer( GL_ARRAY_BUFFER, skinvertVBO(nskin_index) )
-!     call glBufferData( GL_ARRAY_BUFFER,
-!                3*scn->skinvertnum[i]*sizeof(float),
-! !                scn->skinvert + 3*scn->skinvertadr[i],
-! !                GL_STREAM_DRAW);
-
-! !   // upload normals to VBO
-! !   glBindBuffer(GL_ARRAY_BUFFER, con->skinnormalVBO[i]);
-! !   glBufferData(GL_ARRAY_BUFFER,
+! !   scn%skinv
+! !   print *, "skinvertVBO = ", scn%nskin !skinvertVBO
+! !   stop
+! !   do nskin_index = 1, scn%nskin
+! !     !! Upload positions to VBO
+! !     call glBindBuffer( GL_ARRAY_BUFFER, skinvertVBO(nskin_index) )
+! !     call glBufferData( GL_ARRAY_BUFFER,
 ! !                3*scn->skinvertnum[i]*sizeof(float),
-! !                scn->skinnormal + 3*scn->skinvertadr[i],
-! !                GL_STREAM_DRAW);
-! ! }
-!   end do
+! ! !                scn->skinvert + 3*scn->skinvertadr[i],
+! ! !                GL_STREAM_DRAW);
 
-  print *, "Exiting RENDER subroutine"
-end subroutine render
+! ! !   // upload normals to VBO
+! ! !   glBindBuffer(GL_ARRAY_BUFFER, con->skinnormalVBO[i]);
+! ! !   glBufferData(GL_ARRAY_BUFFER,
+! ! !                3*scn->skinvertnum[i]*sizeof(float),
+! ! !                scn->skinnormal + 3*scn->skinvertadr[i],
+! ! !                GL_STREAM_DRAW);
+! ! ! }
+! !   end do
+
+!   print *, "Exiting RENDER subroutine"
+! end subroutine render
   
 end module mod_mujoco

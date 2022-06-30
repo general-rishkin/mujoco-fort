@@ -52,7 +52,8 @@ module mod_mjmodel
     enumerator :: mjENBL_ENERGY       = 2 !lshift(1, 1)                !! energy computation
     enumerator :: mjENBL_FWDINV       = 4 !lshift(1, 2)                !! record solver statistics
     enumerator :: mjENBL_SENSORNOISE  = 8 !lshift(1, 3)                !! add noise to sensor data
-    enumerator :: mjNENABLE           = 4                           !! number of enable flags
+    enumerator :: mjENBL_MULTICCD     = 16                             !! multi-point convex collison detection 
+    enumerator :: mjNENABLE           = 5                              !! number of enable flags
   end enum
 
   enum, bind(c) !! mjtJoint_ {          !! type of degree of freedom
@@ -102,6 +103,7 @@ module mod_mjmodel
   enum, bind(c) ! mjtIntegrator_ {     !! integrator mode
     enumerator :: mjINT_EULER         = 0                           !! semi-implicit Euler
     enumerator :: mjINT_RK4                                         !! 4th-order Runge Kutta
+    enumerator :: mjINT_IMPLICIT                                    !! implicit in velocity
   end enum
 
   enum, bind(c) ! mjtCollision_ {      !! collision mode for selecting geom pairs
@@ -253,7 +255,7 @@ module mod_mjmodel
     enumerator :: mjSENS_ACTUATORFRC                                !! scalar actuator force
 
     !! sensors related to ball joints
-    enumerator :: mjSENS_BALLQUAT                                   !! 4D ball joint quaterion
+    enumerator :: mjSENS_BALLQUAT                                   !! 4D ball joint quaternion
     enumerator :: mjSENS_BALLANGVEL                                 !! 3D ball joint angular velocity
 
     !! joint and tendon limit sensors, in constraint space
@@ -542,6 +544,7 @@ module mod_mjmodel
 
     !! sizes set after mjModel construction (only affect mjData)
     integer(c_int)  :: nM                         !! number of non-zeros in sparse inertia matrix
+    integer(c_int)  :: nD                         !! number of non-zeros in sparse derivative matrix
     integer(c_int)  :: nemax                      !! number of potential equality-constraint rows
     integer(c_int)  :: njmax                      !! number of available rows in constraint Jacobian
     integer(c_int)  :: nconmax                    !! number of potential contacts in contact list
@@ -806,11 +809,13 @@ module mod_mjmodel
     type(c_ptr)       ::  actuator_group       !! group for visibility                     (nu x 1)
     type(c_ptr)       ::  actuator_ctrllimited !! is control limited                       (nu x 1)
     type(c_ptr)       ::  actuator_forcelimited!! is force limited                         (nu x 1)
+    type(c_ptr)       ::  actuator_actlimited  !! is activation limited                    (nu x 1)
     type(c_ptr)       ::  actuator_dynprm      !! dynamics parameters                      (nu x mjNDYN)
     type(c_ptr)       ::  actuator_gainprm     !! gain parameters                          (nu x mjNGAIN)
     type(c_ptr)       ::  actuator_biasprm     !! bias parameters                          (nu x mjNBIAS)
     type(c_ptr)       ::  actuator_ctrlrange   !! range of controls                        (nu x 2)
     type(c_ptr)       ::  actuator_forcerange  !! range of forces                          (nu x 2)
+    type(c_ptr)       ::  actuator_actrange    !! range of activations                     (nu x 2)
     type(c_ptr)       ::  actuator_gear        !! scale length and transmitted force       (nu x 6)
     type(c_ptr)       ::  actuator_cranklength !! crank length for slider-crank            (nu x 1)
     type(c_ptr)       ::  actuator_acc0        !! acceleration from unit force in qpos0    (nu x 1)

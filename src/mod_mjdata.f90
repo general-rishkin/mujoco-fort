@@ -265,11 +265,17 @@ module mod_mjdata
     type(c_ptr)               :: subtree_linvel       !! linear velocity of subtree com           (nbody x 3)
     type(c_ptr)               :: subtree_angmom       !! angular momentum about subtree com       (nbody x 3)
 
-    type(c_ptr)               :: D_rownnz
-    type(c_ptr)               :: D_rowadr
-    type(c_ptr)               :: D_colind
-    type(c_ptr)               :: qDeriv
-    type(c_ptr)               :: qLU
+    !! computed by mj_implicit
+    type(c_ptr)               :: D_rownnz             !! non-zeros in each row                    (nv x 1)
+    type(c_ptr)               :: D_rowadr             !! address of each row in D_colind          (nv x 1)
+    type(c_ptr)               :: D_colind             !! column indices of non-zeros              (nD x 1)
+
+    !! computed by mj_implicit/mj_derivative
+    type(c_ptr)               :: qDeriv               !! d (passive + actuator - bias) / d qvel   (nD x 1)
+
+    !! computed by mj_implicit/mju_factorLUSparse
+    type(c_ptr)               :: qLU                  !! sparse LU of (qM - dt*qDeriv)            (nD x 1)
+    
     !!-------------------------------- POSITION, VELOCITY, CONTROL/ACCELERATION dependent
 
     !! computed by mj_fwdActuation

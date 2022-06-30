@@ -246,20 +246,20 @@ module mod_mjvisualize
     !! abstract geoms
     integer(c_int)                  :: maxgeom               !! size of allocated geom buffer
     integer(c_int)                  :: ngeom                 !! number of geoms currently in buffer
-    type(c_ptr)                     :: geoms                 !! buffer for geoms
-    type(c_ptr)                     :: geomorder             !! buffer for ordering geoms by distance to camera
+    type(c_ptr)                     :: geoms                 !! buffer for geoms (ngeom)
+    type(c_ptr)                     :: geomorder             !! buffer for ordering geoms by distance to camera (ngeom)
 
     !! skin data
     integer(c_int)                  :: nskin                 !! number of skins
-    type(c_ptr)                     :: skinfacenum           !! number of faces in skin
-    type(c_ptr)                     :: skinvertadr           !! address of skin vertices
-    type(c_ptr)                     :: skinvertnum           !! number of vertices in skin
-    type(c_ptr)                     :: skinvert              !! skin vertex data
-    type(c_ptr)                     :: skinnormal            !! skin normal data
+    type(c_ptr)                     :: skinfacenum           !! number of faces in skin (nskin)
+    type(c_ptr)                     :: skinvertadr           !! address of skin vertices (nskin)
+    type(c_ptr)                     :: skinvertnum           !! number of vertices in skin (nskin)
+    type(c_ptr)                     :: skinvert              !! skin vertex data (nskin)
+    type(c_ptr)                     :: skinnormal            !! skin normal data (nskin)
 
     !! OpenGL lights
     integer(c_int)                  :: nlight                !! number of lights currently in buffer
-    type(mjvLight)                  :: lights(mjMAXLIGHT)    !! buffer for lights
+    type(mjvLight)                  :: lights(mjMAXLIGHT)    !! buffer for lights (nlight)
     ! type(c_ptr)                     :: lights                !! buffer for lights
 
     !! OpenGL cameras

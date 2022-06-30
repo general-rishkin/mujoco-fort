@@ -87,8 +87,8 @@ module mod_mjrender
     integer(c_int)                      :: auxColor_r(mjNAUX)!! auxiliary color buffer for resolving
 
     !! texture objects and info
-    integer(c_int)                      :: ntexture                   !! number of allocated textures
-    integer(c_int)                      :: textureType(100)           !! type of texture (mjtTexture)
+    integer(c_int)                      :: ntexture          !! number of allocated textures
+    integer(c_int)                      :: textureType(100)  !! type of texture (mjtTexture)  (ntexture)
     integer(c_int)                      :: texture(100)      !! texture names
 
     !! displaylist starting positions
@@ -101,18 +101,18 @@ module mod_mjrender
     integer(c_int)                      :: baseFontBig       !! big font
 
     !! displaylist ranges
-    integer(c_int)                      :: rangePlane                 !! all planes from model
-    integer(c_int)                      :: rangeMesh                  !! all meshes from model
-    integer(c_int)                      :: rangeHField                !! all hfields from model
-    integer(c_int)                      :: rangeBuiltin               !! all builtin geoms with quality from model
-    integer(c_int)                      :: rangeFont                  !! all characters in font
+    integer(c_int)                      :: rangePlane        !! all planes from model
+    integer(c_int)                      :: rangeMesh         !! all meshes from model
+    integer(c_int)                      :: rangeHField       !! all hfields from model
+    integer(c_int)                      :: rangeBuiltin      !! all builtin geoms with quality from model
+    integer(c_int)                      :: rangeFont         !! all characters in font
 
     !! skin VBOs
-    integer(c_int)                      :: nskin                      !! number of skins
-    type(c_ptr)                         :: skinvertVBO      !! skin vertex position VBOs  //nskin floats - my addition
-    type(c_ptr)                         :: skinnormalVBO    !! skin vertex normal VBOs
-    type(c_ptr)                         :: skintexcoordVBO  !! skin vertex texture coordinate VBOs
-    type(c_ptr)                         :: skinfaceVBO      !! skin face index VBOs
+    integer(c_int)                      :: nskin             !! number of skins
+    type(c_ptr)                         :: skinvertVBO       !! skin vertex position VBOs  (nskin)
+    type(c_ptr)                         :: skinnormalVBO     !! skin vertex normal VBOs (nskin)
+    type(c_ptr)                         :: skintexcoordVBO   !! skin vertex texture coordinate VBOs (nskin)
+    type(c_ptr)                         :: skinfaceVBO       !! skin face index VBOs (nskin)
 
     !! character info
     integer(c_int)                      :: charWidth(127)             !! character widths: normal and shadow
@@ -121,7 +121,7 @@ module mod_mjrender
     integer(c_int)                      :: charHeightBig              !! character heights: big
 
     !! capabilities
-    integer(c_int)                      :: glewInitialized            !! is glew initialized
+    integer(c_int)                      :: glInitialized              !! is OpenGL initialized
     integer(c_int)                      :: windowAvailable            !! is default/window framebuffer available
     integer(c_int)                      :: windowSamples              !! number of samples for default/window framebuffer
     integer(c_int)                      :: windowStereo               !! is stereo available for default/window framebuffer
